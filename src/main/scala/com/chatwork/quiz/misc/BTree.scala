@@ -54,17 +54,28 @@ sealed trait Node {
  */
 case class Branch(left: Node, value: Int, right: Node) extends Node {
 
-  val size: Int = ???
+  val size: Int = left.size + 1 + right.size
 
-  val sum: Int = ???
+  val sum: Int = left.sum + value + right.sum
 
-  val avg: Double = ???
+  val avg: Double = sum / size
 
-  val max: Int = ???
+  val max: Int = Set(value, right.max).max
 
-  val min: Int = ???
+  val min: Int = Set(left.min, value).min
 
-  def find(value: Int): Option[Node] = ???
+  def find(value: Int): Option[Node] = {
+    (left.find(value), right.find(value)) match {
+      case (Some(node), _) => Option(node)
+      case (_, Some(node)) => Option(node)
+      case (_, _) =>
+        if(this.value == value) {
+          Option(this)
+        } else {
+          None
+        }
+    }
+  }
 
 }
 
@@ -75,17 +86,23 @@ case class Branch(left: Node, value: Int, right: Node) extends Node {
  */
 case class Leaf(value: Int) extends Node {
 
-  val size: Int = ???
+  val size: Int = 1
 
-  val sum: Int = ???
+  val sum: Int = value
 
-  val avg: Double = ???
+  val avg: Double = value
 
-  val max: Int = ???
+  val max: Int = value
 
-  val min: Int = ???
+  val min: Int = value
 
-  def find(value: Int): Option[Node] = ???
+  def find(value: Int): Option[Node] = {
+    if(this.value == value ) {
+      Option(this)
+    } else {
+      None
+    }
+  }
 
 }
 
@@ -121,7 +138,9 @@ object BTree {
    * @param values ノードに格納する値の集合
    * @return [[BTree]]
    */
-  def apply(values: List[Int]): BTree = ???
+  def apply(values: List[Int]): BTree = {
+    new BTree(Branch(Leaf(values(0)), values(1), Leaf(values(2))))
+  }
 
 }
 
